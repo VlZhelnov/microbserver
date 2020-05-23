@@ -1,18 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import serial
 import time
+import save_login
 
-ser = serial.Serial("/dev/ttyUSB0", 9600)
-
+conn = save_login.db_connecting()
+cur = conn.cursor()
+cur.execute("SELECT c FROM test2")
+data = cur.fetchall()
 def data_gen():
-	for cnt in range(10000):
-		time.sleep(0.003)
-		t = cnt
-		z =int(ser.read().hex(),16)*256 + int(ser.read().hex(), 16)
-		print (t, np.float64(z))
-		yield t, np.float64(z)
+	for cnt in range(len(data)):
+		yield cnt, data[cnt][0]
 
 
 

@@ -4,8 +4,8 @@ import keyring
 import subprocess
 import psycopg2	
 
-systemname = "atmega"
-username = "vladimir"
+systemname = "dbvmjkabf4cnq6"
+username = "diuyoekvksyxbg"
 
 def parse_arguments():
 	parser = argparse.ArgumentParser()
@@ -13,8 +13,8 @@ def parse_arguments():
 	return parser.parse_args()
 
 def db_connecting():
-	db_name = "atmega"
-	db_host = "127.0.0.1"
+	db_name = "dbvmjkabf4cnq6"
+	db_host = "ec2-3-91-139-25.compute-1.amazonaws.com"
 	passwd = keyring.get_password(systemname, username)
 	try:
 		conn = psycopg2.connect(database = db_name,

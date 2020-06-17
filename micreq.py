@@ -19,14 +19,14 @@ SQL_DELETE_REQUEST = """DELETE FROM microrequest WHERE id = %s""";
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description = "Connect to PostgreSQL and set request")
+    parser = argparse.ArgumentParser(description = "Connect to PostgreSQL and send request")
     parser.add_argument("user", help="Username for database")
     parser.add_argument("dbname", help="Name database")
-    parser.add_argument("-host", default='localhost', help="Name database")
-    parser.add_argument("-p", "--port", default='5432', help="Use port")
-    parser.add_argument("-n", "--newpass", help="Set new password", action="store_true")
-    parser.add_argument("-r", "--request", metavar=("Title", "Delay", "Quantity"), type=str, nargs=3, help='Vector request')
-    parser.add_argument( "--plot", metavar=("Request_id"), type=str, nargs=1, help='Number request')
+    parser.add_argument("-host", default='localhost', help="default localhost")
+    parser.add_argument("-p", "--port", default='5432', help="default 5432")
+    parser.add_argument("-n", "--newpass", help="Set new password in keyring", action="store_true")
+    parser.add_argument("--request", metavar=("title", "delay", "quantity"), type=str, nargs=3, help='vector request')
+    parser.add_argument( "--plot", metavar=("request_id"), type=str, nargs=1, help='Number request')
     parser.add_argument("-s", "--server", help="Start server", action="store_true")
     parser.add_argument("-i", "--info", help="Table request", action="store_true")
     parser.add_argument("-d", "--delete", help="Delete request", action="store_true")

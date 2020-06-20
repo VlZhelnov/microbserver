@@ -108,7 +108,7 @@ if __name__ == '__main__':
     if args.newpass:
         password = getpass.getpass(prompt = "Enter secret password:")
         try:
-            keyring.set_password(args.db_name, args.user, password)
+            keyring.set_password(args.dbname, args.user, password)
         except Exception as error:
             print("Error: {}".format(error))
 

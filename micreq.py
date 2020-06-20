@@ -26,10 +26,10 @@ def parse_arguments():
     parser.add_argument("-p", "--port", default='5432', help="default 5432")
     parser.add_argument("-n", "--newpass", help="Set new password in keyring", action="store_true")
     parser.add_argument("--request", metavar=("title", "delay", "quantity"), type=str, nargs=3, help='vector request')
-    parser.add_argument( "--plot", metavar=("request_id"), type=str, nargs=1, help='Number request')
+    parser.add_argument("--plot", metavar=("request_id"), type=str, nargs=1, help='Number request')
     parser.add_argument("-s", "--server", help="Start server", action="store_true")
+    parser.add_argument("-d", "--delete", metavar=("request_id"), type=str, nargs=1, help='Number request')
     parser.add_argument("-i", "--info", help="Table request", action="store_true")
-    parser.add_argument("-d", "--delete", help="Delete request", action="store_true")
     return parser.parse_args()
 
 def new_request(connection,cursor, title, delay, quantity):
@@ -68,7 +68,7 @@ def info(cursor):
     cursor.execute(SQL_SELECT_REQUEST)
     columns = [row[0] for row in cursor.description]
     all_requests = cursor.fetchall()
-    df = pd.DataFrame(all_requests, columns=columns)
+    df = pd.DataFrame(all_requests, columns=columns).set_index("id", drop=True)
     return df
 
 
@@ -125,6 +125,6 @@ if __name__ == '__main__':
             if args.server: server(connection, cursor)
             if args.info: print(info(cursor))
             if args.plot: plot(cursor,args.plot[0])
-            if args.delete: delete(args.delete[0])
+            if args.delete: delete(connection, cursor, args.delete[0])
     exit(0)
 

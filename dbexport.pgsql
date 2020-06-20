@@ -134,14 +134,14 @@ COPY public.microrequest (id, title, data_request, data_accept, delay, quantity,
 -- Name: entry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pi
 --
 
-SELECT pg_catalog.setval('public.entry_id_seq', 0, true);
+SELECT pg_catalog.setval('public.entry_id_seq', 1, true);
 
 
 --
 -- Name: microrequest_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pi
 --
 
-SELECT pg_catalog.setval('public.microrequest_id_seq', 0, true);
+SELECT pg_catalog.setval('public.microrequest_id_seq', 1, true);
 
 
 --

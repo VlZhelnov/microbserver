@@ -1,7 +1,7 @@
 import argparse
 import getpass
 import keyring
-import psycopg2	
+import psycopg2 
 import serial
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 SQL_NEW_REQUEST = """INSERT INTO microrequest (title, delay, quantity) VALUES  (%s, %s, %s);"""
 SQL_INSERT_ENTRY = """INSERT INTO entry(elapsed_time, temperature, illumination, microrequest_id) VALUES (%s, %s, %s, %s);"""
 SQL_START_REQUEST = """UPDATE microrequest SET (data_accept, status) = (current_timestamp, 'processing') WHERE id = %s;"""
+SQL_CLEAR_REQUEST = """UPDATE microrequest SET (data_completed, status) = (current_timestamp, 'error') WHERE status = 'processing';"""
 SQL_DONE_REQUEST =  """UPDATE microrequest SET (status, data_completed) = ('completed', current_timestamp) WHERE id = %s;"""
 SQL_ERROR_REQUEST = """UPDATE microrequest SET (title, status, data_completed) = (%s, 'error', current_timestamp) WHERE id = %s;"""
 SQL_GET_ENTRIES = """SELECT elapsed_time, temperature, illumination from entry WHERE microrequest_id = %s;"""
@@ -37,15 +38,22 @@ def new_request(connection,cursor, title, delay, quantity):
     connection.commit()
     print("Create new request")
 
+def init_micro(seral): 
+    seral.write("G0000300001".encode())
+    for i in range(4):
+        seral.readline()
 
 def server(connection, cursor):
-    with serial.Serial("/dev/ttyUSB0", 9600) as seral:
-        while(True):
+    cursor.execute(SQL_CLEAR_REQUEST)
+    connection.commit()
+    while(True):
+        cursor.execute(SQL_GET_REQUEST_ADOPTED)
+        tasks = cursor.fetchall()
+        if tasks:
+            microreq_id = str(tasks[0][0])
             try:
-                cursor.execute(SQL_GET_REQUEST_ADOPTED)
-                tasks = cursor.fetchall()
-                if tasks:
-                    microreq_id = str(tasks[0][0])
+                with serial.Serial("/dev/ttyUSB0", 9600) as seral:
+                    init_micro(seral)
                     request_for_mk ="G{:0>5}{:0>5}".format(tasks[0][3], tasks[0][2]).encode()
                     cursor.execute(SQL_START_REQUEST, (microreq_id,))
                     connection.commit()
@@ -61,8 +69,7 @@ def server(connection, cursor):
             except Exception as e:
                 cursor.execute(SQL_ERROR_REQUEST,(" ".join([tasks[0][1], "ERROR:", str(e)]), microreq_id))
                 connection.commit()
-                print("ERROR")
-                return
+                print(e)
 
 def info(cursor):
     cursor.execute(SQL_SELECT_REQUEST)
